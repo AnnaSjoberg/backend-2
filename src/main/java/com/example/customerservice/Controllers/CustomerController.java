@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller // This means that this class is a Controller
+import java.util.List;
+
+@RestController // This means that this class is a Controller
 @RequestMapping(path="/customers") // This means URL's start with /demo (after Application path)
 public class CustomerController {
     @Autowired // This means to get the bean called userRepository
@@ -27,11 +29,18 @@ public class CustomerController {
         return "Customer saved";
     }
 
-    @GetMapping(path="/getAll")
-    public @ResponseBody Iterable<Customer> getAllCustomers() {
+@GetMapping(path="/getAll")
+public List<Customer> getAllCustomers() {
+    // This returns a JSON or XML with the users
+    return customerRepo.findAll();
+}
+/*    @GetMapping(path="/getAll2")
+    public @ResponseBody List<Customer> getAllCustomers2() {
         // This returns a JSON or XML with the users
         return customerRepo.findAll();
     }
+
+ */
     @GetMapping(path = "/getById/{id}")
     public @ResponseBody Customer getById(@PathVariable Long id) {
         return customerRepo.findById(id).get();
@@ -46,6 +55,5 @@ public class CustomerController {
         customerRepo.deleteById(id);
         return "Customer deleted";
     }
-
 
 }

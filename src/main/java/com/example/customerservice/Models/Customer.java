@@ -34,6 +34,7 @@ public class Customer {
         this.email = email;
     }
 
+
     public void addToWishlist (Item item){
         wishlist.add(item);
     }
