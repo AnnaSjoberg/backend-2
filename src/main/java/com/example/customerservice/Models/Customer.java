@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +26,7 @@ public class Customer {
     private String email;
 
     @ElementCollection
-    private List<Item> wishlist = new ArrayList<>();
+    private Set<Item> wishlist = new HashSet<>();
 
 
     public Customer(String fullName, String ssn, Address address, String email) {
@@ -34,8 +36,11 @@ public class Customer {
         this.email = email;
     }
 
-
     public void addToWishlist (Item item){
         wishlist.add(item);
+    }
+
+    public void removeFromWishlist (Item item){
+        wishlist.remove(item);
     }
 }

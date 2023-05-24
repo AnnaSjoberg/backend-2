@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Item {
     private Long itemID;
+  //  private String name;
+    //private int price;
 
 }
