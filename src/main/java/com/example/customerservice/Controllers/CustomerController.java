@@ -46,13 +46,13 @@ public class CustomerController {
         return customerRepo.findAll();
     }
 
-    /*    @GetMapping(path="/getAll2")
+        @GetMapping(path="/getAll2")
         public @ResponseBody List<Customer> getAllCustomers2() {
             // This returns a JSON or XML with the users
             return customerRepo.findAll();
         }
 
-     */
+
     @GetMapping(path = "/getById/{id}")
     public @ResponseBody Customer getById(@PathVariable Long id) {
         return customerRepo.findById(id).orElse(null);
