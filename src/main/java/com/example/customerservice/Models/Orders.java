@@ -5,13 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ItemDTO {
+public class Orders {
     @JsonIgnore
     private Long id;
-    private String name;
-    private String price;
-
+    private LocalDate date;
+    private Customer customer;
+    private List<Item> items;
 }

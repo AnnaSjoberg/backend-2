@@ -1,17 +1,19 @@
 package com.example.customerservice.Models;
 
-import jakarta.persistence.Embeddable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Embeddable
+@AllArgsConstructor
+@Data
 public class Item {
-    private Long itemID;
-  //  private String name;
-    //private int price;
+    private String name;
+    private String price;
+    @JsonIgnore
+    private Long id;
+    @JsonIgnore
+    private int stock;
 
 }
