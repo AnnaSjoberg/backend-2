@@ -15,6 +15,7 @@ public class Orders {
     @JsonIgnore
     private Long id;
     private LocalDate date;
+    //these will need to be changed to 'Long' when Orders-service is updated
     private Customer customer;
     private List<Item> items;
 }

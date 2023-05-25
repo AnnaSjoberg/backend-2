@@ -4,10 +4,12 @@ import com.example.customerservice.Models.*;
 import com.example.customerservice.Repos.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -76,36 +78,61 @@ public class CustomerController {
         customerRepo.deleteById(id);
         return "Customer deleted";
     }
+    @GetMapping("/{customerId}/getOrdersRE")
+    public ResponseEntity<Orders[]> getOrdersByCustomerId(@PathVariable Long customerId) {
+        String ordersResourceUrl = ordersServiceBaseUrl + "/orders/getByCustomerId/{customerId}";
+        Customer c = customerRepo.findById(customerId).orElse(null);
+
+        if (c == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Orders[] ordersArray = restTemplate.getForObject(ordersResourceUrl, Orders[].class, customerId);
+
+        return (ordersArray != null && ordersArray.length > 0) ? ResponseEntity.ok(ordersArray) : ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{customerId}/getOrdersLO")
+    public @ResponseBody List<Orders> getOrdersByCustomerId2(@PathVariable Long customerId) {
+        String ordersResourceUrl = ordersServiceBaseUrl + "/orders/getByCustomerId/{customerId}";
+        Customer c = customerRepo.findById(customerId).orElse(null);
+        List<Orders> ordersList = new ArrayList<>();
+        if (c != null) {
+             ordersList = Arrays.asList(restTemplate.getForObject(ordersResourceUrl, Orders[].class, customerId));
+        }
+        return ordersList;
+    }
 
     @GetMapping(path = "/{customerId}/wishlist")
     public @ResponseBody List<Item> getWishlist(@PathVariable Long customerId) {
         String itemResourceUrl = itemServiceBaseUrl + "/items/getById/{id}";
         Customer c = customerRepo.findById(customerId).orElse(null);
-        Set<listItem> itemIds = c.getWishlist();
-        List<Item> wishlist = new ArrayList<>();
-        for (listItem item : itemIds) {
-            Item dto = restTemplate.getForObject(itemResourceUrl, Item.class, item.getItemID());
-            if (dto != null) {
-                wishlist.add(dto);
+        List<Item> wishlistAsDTO = new ArrayList<>();
+        if (c != null) {
+            Set<Long> itemIds = c.getWishlist();
+            for (Long itemId : itemIds) {
+                Item dto = restTemplate.getForObject(itemResourceUrl, Item.class, itemId);
+                if (dto != null) {
+                    wishlistAsDTO.add(dto);
+                }
             }
         }
-        return wishlist;
+        return wishlistAsDTO;
     }
 
-    //curl -X POST -H "Content-Type: application/json" "http://localhost:8080/orders/buy?customerId=1&itemIds=2&itemIds=3"
     @PostMapping(path = "/{customerId}/wishlist/add")
     public @ResponseBody List<String> addToWishlist(@PathVariable Long customerId, @RequestBody List<Long> itemIds) {
         List<String> result = new ArrayList<>();
         String itemResourceUrl = itemServiceBaseUrl + "/items/getById/{id}";
         Customer c = customerRepo.findById(customerId).orElse(null);
         for (Long itemId : itemIds) {
-            if (!c.getWishlist().contains(new listItem(itemId))) {
+            if (!c.getWishlist().contains(itemId)) {
                 Item dto = restTemplate.getForObject(itemResourceUrl, Item.class, itemId);
                 if (dto != null) {
-                    c.addToWishlist(new listItem(itemId));
+                    c.addToWishlist(itemId);
                     result.add("Item " + itemId + " has been added to wishlist");
                 } else {
-                    result.add("No matching item found");
+                    result.add("No matching item found for item " + itemId);
                 }
             }
         }
@@ -113,66 +140,35 @@ public class CustomerController {
         return result;
     }
 
-    @PostMapping(path = "/{customerId}/wishlist/addItem")
-    public @ResponseBody String addItemToWishlist(@PathVariable Long customerId, @RequestBody listItem item) {
-        String itemResourceUrl = itemServiceBaseUrl + "/items/getById/{id}";
-        Customer c = customerRepo.findById(customerId).orElse(null);
-        Item dto = restTemplate.getForObject(itemResourceUrl, Item.class, item.getItemID());
-        if (dto == null) {
-            return "No item found";
-        }
-        c.addToWishlist(item);
-        return "Item added to wishlist";
-
-    }
-    @PostMapping(path = "/{customerId}/wishlist/test")
-    public @ResponseBody String test(@PathVariable Long customerId, @RequestBody listItem item) {
-        //String itemResourceUrl = itemServiceBaseUrl + "items/getById/{id}";
-        return "" + item.getItemID();
-
-    }
-
-    @PostMapping(path = "/{customerId}/wishlist/addItems")
-    public @ResponseBody String addItemsToWishlist(@PathVariable Long customerId, @RequestBody List<listItem> items) {
-        String itemResourceUrl = itemServiceBaseUrl + "/items/getById/{id}";
-        Customer c = customerRepo.findById(customerId).orElse(null);
-
-        for (listItem item : items) {
-            Item dto = restTemplate.getForObject(itemResourceUrl, Item.class, item.getItemID());
-            if (dto == null) {
-                return "No item found for ID: " + item.getItemID();
-            }
-            c.addToWishlist(item);
-        }
-
-        return "Items added to wishlist";
-    }
-
 
     @PostMapping(path = "/{customerId}/wishlist/remove")
     public List<String> removeFromWishlist(@PathVariable Long customerId, @RequestBody List<Long> itemIds) {
         List<String> result = new ArrayList<>();
         Customer c = customerRepo.findById(customerId).orElse(null);
-        for (Long itemId : itemIds) {
-            c.removeFromWishlist(new listItem(itemId));
-            result.add("Item has been removed from wishlist");
+
+        if (c.getWishlist().size() == 0) {
+            result.add("Empty list, nothing to remove");
+
+        } else {
+            for (Long itemId : itemIds) {
+                c.removeFromWishlist(itemId);
+                result.add("Item " + itemId + " has been removed from wishlist");
+            }
         }
         customerRepo.save(c);
-        if (c.getWishlist().size() > 0) {
-            return result;
-        } else {
-            result.add("Empty list, nothing to remove");
-            return result;
-        }
+        return result;
     }
+
+
+    //dessa kanske man egentligen inte är intresserad av att använda i verkligheten?
     @GetMapping("/getAllItems")
-    public @ResponseBody listItem[] getItems (){
-        String itemResourceUrl = itemServiceBaseUrl + "/items/getAllItems";
-        return restTemplate.getForObject(itemResourceUrl, listItem[].class);
+    public @ResponseBody Item[] getItems() {
+        String itemResourceUrl = itemServiceBaseUrl + "/items/getAll";
+        return restTemplate.getForObject(itemResourceUrl, Item[].class);
     }
 
     @GetMapping("/getAllOrders")
-    public @ResponseBody Orders[] getOrders (){
+    public @ResponseBody Orders[] getOrders() {
         String ordersResourceUrl = ordersServiceBaseUrl + "/orders/getAll";
         return restTemplate.getForObject(ordersResourceUrl, Orders[].class);
     }

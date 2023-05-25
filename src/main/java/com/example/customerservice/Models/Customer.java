@@ -24,7 +24,7 @@ public class Customer {
     private String email;
 
     @ElementCollection
-    private Set<listItem> wishlist = new HashSet<>();
+    private Set<Long> wishlist = new HashSet<>();
 
 
     public Customer(String fullName, String ssn, Address address, String email) {
@@ -34,11 +34,11 @@ public class Customer {
         this.email = email;
     }
 
-    public void addToWishlist (listItem item){
-        wishlist.add(item);
+    public void addToWishlist (Long itemId){
+        wishlist.add(itemId);
     }
 
-    public void removeFromWishlist (listItem item){
-        wishlist.remove(item);
+    public void removeFromWishlist (Long itemId){
+        wishlist.remove(itemId);
     }
 }
