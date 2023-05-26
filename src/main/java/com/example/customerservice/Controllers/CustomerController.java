@@ -50,14 +50,18 @@ public class CustomerController {
     }
      */
 
-    @GetMapping(path = "/getAll")
-    public List<Customer> getAllCustomers() {
-        // This returns a JSON or XML with the users
-        return customerRepo.findAll();
-    }
+    @GetMapping()
+    public String welcome() {
 
-    @GetMapping(path = "/getAll2")
-    public @ResponseBody List<Customer> getAllCustomers2() {
+        return "Welcome to Customers!";
+    }
+    @GetMapping("/adder")
+    public String adder() {
+
+        return "Only Admin!";
+    }
+    @GetMapping(path = "/getAll")
+    public @ResponseBody List<Customer> getAllCustomers() {
         // This returns a JSON or XML with the users
         return customerRepo.findAll();
     }
