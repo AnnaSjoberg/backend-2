@@ -16,6 +16,7 @@ import java.util.List;
 public class Orders {
     @JsonIgnore
     private Long id;
+    @NotNull
     private LocalDate date;
     @NotNull(message = "Items can not be given for free")
     private int sum;
