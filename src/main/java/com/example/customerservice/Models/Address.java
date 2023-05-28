@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Address {
     @NotBlank(message = "Street must be set")
     private String street;
-    @NotBlank(message = "Must not be blank")
+    @NotBlank(message = "Must not be blank")//lite onödigt kan man tycka
     @Size(min = 5, max = 5, message = "Zip code must contain 5 digits")
     private String zipCode;
     @NotBlank(message = "Postal address must be set")
