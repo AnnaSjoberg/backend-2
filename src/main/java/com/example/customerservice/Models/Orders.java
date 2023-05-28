@@ -1,8 +1,7 @@
 package com.example.customerservice.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +16,10 @@ public class Orders {
     @JsonIgnore
     private Long id;
     @NotNull
+    @Past(message = "Enter valid date.")
     private LocalDate date;
     @NotNull(message = "Items can not be given for free")
+    @Min(value = 1)
     private int sum;
     private Long customerId; //Ska kunna raderas och bli null
     @NotEmpty

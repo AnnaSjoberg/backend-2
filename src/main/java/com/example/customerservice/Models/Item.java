@@ -23,10 +23,8 @@ public class Item {
     @Size(min = 1 , max = 100, message = "Item name must be between 1 and 100 characters long")
     private String name;
     @Min(value = 1, message = "Item is not supposed to be given free!")
-    @NotNull(message = "Must have a set price")
     private int price;
     @JsonIgnore
-    @NotNull(message = "Must have a set stock")
     private int stock;
 
 }
