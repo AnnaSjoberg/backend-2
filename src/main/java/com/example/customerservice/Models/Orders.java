@@ -18,7 +18,6 @@ public class Orders {
     @NotNull
     @Past(message = "Enter valid date.")
     private LocalDate date;
-    @NotNull(message = "Items can not be given for free")
     @Min(value = 1)
     private int sum;
     private Long customerId; //Ska kunna raderas och bli null
