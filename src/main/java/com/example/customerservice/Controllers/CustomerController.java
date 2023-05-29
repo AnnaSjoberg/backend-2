@@ -2,9 +2,11 @@ package com.example.customerservice.Controllers;
 
 import com.example.customerservice.Models.*;
 import com.example.customerservice.Repos.CustomerRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@Validated
 @RequestMapping(path = "/customers")
 public class CustomerController {
 
@@ -29,7 +32,7 @@ public class CustomerController {
     private CustomerRepository customerRepo;
 
     @PostMapping(path = "/add") // Map ONLY POST Requests
-    public @ResponseBody String addNewCustomer(@RequestBody Customer customer) {
+    public @ResponseBody String addNewCustomer(@Valid @RequestBody Customer customer) {
 
         customerRepo.save(customer);
         return "customer added successfully";
@@ -73,7 +76,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = "/getBySsn/{ssn}")
-    public @ResponseBody Customer getBySsn(@PathVariable String ssn) {
+    public @ResponseBody Customer getBySsn(@Valid @PathVariable String ssn) {
         return customerRepo.findBySsn(ssn);
     }
 
@@ -125,7 +128,7 @@ public class CustomerController {
     }
 
     @PostMapping(path = "/{customerId}/wishlist/add")
-    public @ResponseBody List<String> addToWishlist(@PathVariable Long customerId, @RequestBody List<Long> itemIds) {
+    public @ResponseBody List<String> addToWishlist(@PathVariable Long customerId, @Valid @RequestBody List<Long> itemIds) {
         List<String> result = new ArrayList<>();
         String itemResourceUrl = itemServiceBaseUrl + "/items/getById/{id}";
         Customer c = customerRepo.findById(customerId).orElse(null);
@@ -146,7 +149,7 @@ public class CustomerController {
 
 
     @PostMapping(path = "/{customerId}/wishlist/remove")
-    public List<String> removeFromWishlist(@PathVariable Long customerId, @RequestBody List<Long> itemIds) {
+    public List<String> removeFromWishlist(@PathVariable Long customerId, @Valid @RequestBody List<Long> itemIds) {
         List<String> result = new ArrayList<>();
         Customer c = customerRepo.findById(customerId).orElse(null);
 
