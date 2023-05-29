@@ -1,5 +1,7 @@
 package com.example.customerservice.Security;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +21,6 @@ import jakarta.servlet.DispatcherType;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    @Autowired
-    private Environment environment;
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
@@ -33,7 +29,7 @@ public class WebSecurityConfig {
                                 DispatcherType.ERROR).permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "customers/getAll/swagger-ui.html").permitAll()
                         .requestMatchers("/", "/customers", "/customers/getAll", "/customers/getById/**").permitAll()
-                        .requestMatchers("/customers/deleteById/**","/customers/add").hasRole("ADMIN")
+                        .requestMatchers("/customers/deleteById/**", "/customers/add").hasRole("ADMIN")
                         .requestMatchers("/customers/**").authenticated()
                 )
                 .formLogin(Customizer.withDefaults());
@@ -43,9 +39,38 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        String customerPW = environment.getProperty("CUSTOMER_PASSWORD");
-        String itemPW = environment.getProperty("ITEM_PASSWORD");
-        String orderPW = environment.getProperty("ORDERS_PASSWORD");
+        UserDetails user = User.withUsername("user")
+                .password("{bcrypt}$2a$10$/vCuzJ7a0e12oGuCJEHBbuno4RyroPhYclYohvwevG0cCapR0Qhmq")
+                .roles("USER")
+                .build();
+        UserDetails admin = User.withUsername("admin")
+                .password("{bcrypt}$2a$10$oT6usX0w.haEtVfbJiwVrO0xNQVVjX9LBMX6H8Aa/prRqXBW/vGTy").roles("USER", "ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+
+
+
+    /*@Autowired
+    private Environment environment;
+    @Value("${customer-service.sec-password}")
+    private String customerPW;
+
+    @Value("${item-service.sec-password}")
+    private String itemPW;
+
+    @Value("${orders-service.sec-password}")
+    private String orderPW;
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+
+
+    @Bean
+    public UserDetailsService userDetailsService() {
 
         PasswordEncoder passwordEncoder = passwordEncoder();
 
@@ -65,6 +90,8 @@ public class WebSecurityConfig {
         return new InMemoryUserDetailsManager(customerUser,itemUser,ordersUser);
     }
 
+
+     */
 }
 
 

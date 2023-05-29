@@ -5,15 +5,15 @@ import com.example.customerservice.Repos.CustomerRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @Validated
@@ -38,20 +38,6 @@ public class CustomerController {
         return "customer added successfully";
     }
 
-    /*
-        @PostMapping(path = "/add") // Map ONLY POST Requests
-    public @ResponseBody String addNewCustomer(@RequestParam String name,
-                                               @RequestParam String email,
-                                               @RequestParam String ssn,
-                                               @RequestParam String street,
-                                               @RequestParam String zipcode,
-                                               @RequestParam String postalAddress,
-                                               @RequestParam String country) {
-
-        customerRepo.save(new Customer(name, ssn, new Address(street, zipcode, postalAddress, country), email));
-        return "Customer saved";
-    }
-     */
 
     @GetMapping()
     public String welcome() {
@@ -166,6 +152,17 @@ public class CustomerController {
         return result;
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 
     //dessa kanske man egentligen inte är intresserad av att använda i verkligheten?
     @GetMapping("/getAllItems")
