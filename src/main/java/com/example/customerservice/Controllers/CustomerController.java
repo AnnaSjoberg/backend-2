@@ -1,5 +1,6 @@
 package com.example.customerservice.Controllers;
 
+import com.example.customerservice.Exception.CustomerNotFoundException;
 import com.example.customerservice.Models.*;
 import com.example.customerservice.Repos.CustomerRepository;
 import jakarta.validation.Valid;
@@ -10,10 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @Validated
@@ -70,11 +68,22 @@ public class CustomerController {
     }
 
 
-    @GetMapping(path = "/getById/{id}")
+   /* @GetMapping(path = "/getById/{id}")
     public @ResponseBody Customer getById(@PathVariable Long id) {
         return customerRepo.findById(id).orElse(null);
     }
 
+    */
+
+    @GetMapping(path = "/getById/{id}")
+    public ResponseEntity<Customer> getById(@PathVariable Long id) {
+        Optional<Customer> customer = customerRepo.findById(id);
+        if (customer.isPresent()) {
+            return ResponseEntity.ok(customer.get());
+        } else {
+            throw new CustomerNotFoundException("Customer not found with ID: " + id);
+        }
+    }
     @GetMapping(path = "/getBySsn/{ssn}")
     public @ResponseBody Customer getBySsn(@Valid @PathVariable String ssn) {
         return customerRepo.findBySsn(ssn);
