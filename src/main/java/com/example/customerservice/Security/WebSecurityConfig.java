@@ -22,20 +22,39 @@ import jakarta.servlet.DispatcherType;
 @EnableWebSecurity
 public class WebSecurityConfig {
     @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((requests) -> requests
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/customers", "/customers/getAll", "/customers/getById/**", "/customers/add").permitAll()
+                        .requestMatchers("/customers/deleteById/**").hasRole("ADMIN")
+                        .requestMatchers("/customers/**").authenticated()
+                )
+                .formLogin((formLogin) ->
+                        formLogin.defaultSuccessUrl("/customers/welcome")) // Set the desired success URL
+                .cors().disable()
+                .csrf().disable();
+        return http.build();
+    }
+
+
+ /*   @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
         http.authorizeHttpRequests((requests) -> requests
                         .dispatcherTypeMatchers(DispatcherType.FORWARD,
                                 DispatcherType.ERROR).permitAll()
                         .requestMatchers("/", "/v3/api-docs","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers( "/customers", "/customers/getAll", "/customers/getById/**").permitAll()
-                        .requestMatchers("/customers/deleteById/**", "/customers/add").hasRole("ADMIN")
+                        .requestMatchers( "/customers", "/customers/getAll", "/customers/getById/**", "/customers/add").permitAll()
+                        .requestMatchers("/customers/deleteById/**").hasRole("ADMIN")
                         .requestMatchers("/customers/**").authenticated()
                 )
                 .formLogin(Customizer.withDefaults());
         http.cors().disable().csrf().disable();
         return http.build();
     }
+
+  */
 
   /*  @Bean
     public UserDetailsService userDetailsService() {

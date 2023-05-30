@@ -40,14 +40,12 @@ public class CustomerController {
     private CustomerRepository customerRepo;
 
 
-    @GetMapping()
+    @GetMapping("/welcome")
     public String welcome() {
-        return "Welcome to Customers!";
+        return "Login successful. Welcome to the Customer-Service";
     }
-    @GetMapping("/isch")
-    public String welcome2() {
-        return "Welcome to Customers!";
-    }
+
+
 
     @GetMapping(path = "/getAll")
     @Operation(summary = "Fetches all Customers", description = "Fetches all Customers in db and returns them as a List in JSON format")
@@ -58,7 +56,7 @@ public class CustomerController {
 
 
 
-    @GetMapping(path = "/getByIdWError/{id}")
+    @GetMapping("/getById/{id}")
     @Operation(summary = "fetches a Customer by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -71,18 +69,10 @@ public class CustomerController {
                     description = "Customer not found",
                     content = @Content)
     })
-    public ResponseEntity<Customer> getByIdWError(@PathVariable Long id) {
-        Optional<Customer> customer = customerRepo.findById(id);
-        if (customer.isPresent()) {
-            return ResponseEntity.ok(customer.get());
-        } else {
-            throw new CustomerNotFoundException("Customer not found with ID: " + id);
-        }
-    }
-    @GetMapping("/getById/{id}")
-    public @ResponseBody Customer getById(@PathVariable Long id){
+    public @ResponseBody Customer getById(@PathVariable Long id) {
         return customerRepo.findById(id).orElse(null);
     }
+
 
     @GetMapping(path = "/getBySsn/{ssn}")
     @Operation(summary = "fetches a Customer by its Social security number. Requires authentication.")
@@ -103,9 +93,9 @@ public class CustomerController {
     public @ResponseBody Customer getBySsn(@Valid @PathVariable String ssn) {
         return customerRepo.findBySsn(ssn);
     }
+
     @PostMapping(path = "/add") // Map ONLY POST Requests
-    @Operation(summary = "Adds a new Customer", description = "Stores a new Customer in the database. Requires Admin privileges")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Adds a new Customer", description = "Stores a new Customer in the database.")
     public @ResponseBody String addNewCustomer(@Valid @RequestBody Customer customer) {
         customerRepo.save(customer);
         return "customer added successfully";
@@ -118,6 +108,7 @@ public class CustomerController {
         customerRepo.deleteById(id);
         return "Customer deleted";
     }
+
     @GetMapping("/{customerId}/getOrders")
     @Operation(summary = "fetches all orders placed by a Customer. Requires authentication.")
     @ApiResponses(value = {
