@@ -27,8 +27,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((requests) -> requests
                         .dispatcherTypeMatchers(DispatcherType.FORWARD,
                                 DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "customers/getAll/swagger-ui.html").permitAll()
-                        .requestMatchers("/", "/customers", "/customers/getAll", "/customers/getById/**").permitAll()
+                        .requestMatchers("/", "/v3/api-docs","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers( "/customers", "/customers/getAll", "/customers/getById/**").permitAll()
                         .requestMatchers("/customers/deleteById/**", "/customers/add").hasRole("ADMIN")
                         .requestMatchers("/customers/**").authenticated()
                 )
