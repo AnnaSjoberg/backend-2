@@ -44,6 +44,10 @@ public class CustomerController {
     public String welcome() {
         return "Welcome to Customers!";
     }
+    @GetMapping("/isch")
+    public String welcome2() {
+        return "Welcome to Customers!";
+    }
 
     @GetMapping(path = "/getAll")
     @Operation(summary = "Fetches all Customers", description = "Fetches all Customers in db and returns them as a List in JSON format")
@@ -54,7 +58,7 @@ public class CustomerController {
 
 
 
-    @GetMapping(path = "/getById/{id}")
+    @GetMapping(path = "/getByIdWError/{id}")
     @Operation(summary = "fetches a Customer by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -67,7 +71,7 @@ public class CustomerController {
                     description = "Customer not found",
                     content = @Content)
     })
-    public ResponseEntity<Customer> getById(@PathVariable Long id) {
+    public ResponseEntity<Customer> getByIdWError(@PathVariable Long id) {
         Optional<Customer> customer = customerRepo.findById(id);
         if (customer.isPresent()) {
             return ResponseEntity.ok(customer.get());
@@ -75,6 +79,11 @@ public class CustomerController {
             throw new CustomerNotFoundException("Customer not found with ID: " + id);
         }
     }
+    @GetMapping("/getById/{id}")
+    public @ResponseBody Customer getById(@PathVariable Long id){
+        return customerRepo.findById(id).orElse(null);
+    }
+
     @GetMapping(path = "/getBySsn/{ssn}")
     @Operation(summary = "fetches a Customer by its Social security number. Requires authentication.")
     @ApiResponses(value = {
