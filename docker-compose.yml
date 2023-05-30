@@ -9,6 +9,9 @@ services:
       MYSQL_HOST: customer-mysql
       DB_USER: CustomerUser
       DB_PASSWORD: ${CUSTOMER_PASSWORD}
+      CUSTOMER_PASSWORD: ${CUSTOMER_PASSWORD}
+      ORDERS_PASSWORD: ${ORDERS_PASSWORD}
+      ITEM_PASSWORD: ${ITEM_PASSWORD}
       MYSQL_PORT: 3306
       DB_DATABASE: db_customer
     depends_on:
@@ -34,6 +37,7 @@ services:
       MYSQL_HOST: order-mysql
       DB_USER: OrderUser
       DB_PASSWORD: ${ORDERS_PASSWORD}
+      ORDERS_PASSWORD: ${ORDERS_PASSWORD}
       MYSQL_PORT: 3306
       DB_DATABASE: db_order
     depends_on:
@@ -59,6 +63,7 @@ services:
       MYSQL_HOST: item-mysql
       DB_USER: ItemUser
       DB_PASSWORD: ${ITEM_PASSWORD}
+
       MYSQL_PORT: 3306
       DB_DATABASE: db_item
     depends_on:

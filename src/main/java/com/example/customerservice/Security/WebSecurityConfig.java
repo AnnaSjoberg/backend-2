@@ -37,7 +37,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
+  /*  @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername("user")
                 .password("{bcrypt}$2a$10$/vCuzJ7a0e12oGuCJEHBbuno4RyroPhYclYohvwevG0cCapR0Qhmq")
@@ -50,8 +50,10 @@ public class WebSecurityConfig {
     }
 
 
+   */
 
-    /*@Autowired
+
+    @Autowired
     private Environment environment;
     @Value("${customer-service.sec-password}")
     private String customerPW;
@@ -91,7 +93,7 @@ public class WebSecurityConfig {
     }
 
 
-     */
+
 }
 
 
