@@ -2,11 +2,9 @@ package com.example.customerservice.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -26,8 +24,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((requests) -> requests
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/customers", "/customers/getAll", "/customers/getById/**", "/customers/add").permitAll()
-                        .requestMatchers("/customers/deleteById/**").hasRole("ADMIN")
+                        .requestMatchers("/customers", "/customers/getAll", "/customers/getById/**").permitAll()
+                        .requestMatchers("/customers/deleteById/**", "/customers/add").hasRole("ADMIN")
                         .requestMatchers("/customers/**").authenticated()
                 )
                 .formLogin((formLogin) ->
@@ -36,40 +34,6 @@ public class WebSecurityConfig {
                 .csrf().disable();
         return http.build();
     }
-
-
- /*   @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
-        http.authorizeHttpRequests((requests) -> requests
-                        .dispatcherTypeMatchers(DispatcherType.FORWARD,
-                                DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/", "/v3/api-docs","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers( "/customers", "/customers/getAll", "/customers/getById/**", "/customers/add").permitAll()
-                        .requestMatchers("/customers/deleteById/**").hasRole("ADMIN")
-                        .requestMatchers("/customers/**").authenticated()
-                )
-                .formLogin(Customizer.withDefaults());
-        http.cors().disable().csrf().disable();
-        return http.build();
-    }
-
-  */
-
-  /*  @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password("{bcrypt}$2a$10$/vCuzJ7a0e12oGuCJEHBbuno4RyroPhYclYohvwevG0cCapR0Qhmq")
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password("{bcrypt}$2a$10$oT6usX0w.haEtVfbJiwVrO0xNQVVjX9LBMX6H8Aa/prRqXBW/vGTy").roles("USER", "ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin);
-    }
-
-
-   */
 
 
     @Autowired
@@ -86,9 +50,6 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
 
     @Bean
     public UserDetailsService userDetailsService() {

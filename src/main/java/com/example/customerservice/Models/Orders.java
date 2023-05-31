@@ -20,7 +20,7 @@ public class Orders {
     private LocalDate date;
     @Min(value = 1)
     private int sum;
-    private Long customerId; //Ska kunna raderas och bli null
+    private Long customerId;
     @NotEmpty
     private List<Long> itemIds;
 }
